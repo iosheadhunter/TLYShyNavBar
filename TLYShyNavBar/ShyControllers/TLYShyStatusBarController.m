@@ -44,9 +44,24 @@ static inline CGFloat AACStatusBarHeight(UIViewController *viewController)
 
 @implementation TLYShyStatusBarController
 
+- (CGFloat)statusBarDefaultHeight {
+    int const iPhoneXScreenHeight = 2436;
+    CGFloat iPhoneXStatusBarHeight = 44;
+    CGFloat defaultStatusBarHeight = 20;
+    if([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
+        switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
+            case iPhoneXScreenHeight:
+                return iPhoneXStatusBarHeight;
+            default:
+                return defaultStatusBarHeight;
+        }
+    }
+    return defaultStatusBarHeight;
+}
+
 - (CGFloat)_statusBarHeight
 {
-    CGFloat statusBarDefaultHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    CGFloat statusBarDefaultHeight = [self statusBarDefaultHeight];
     CGFloat statusBarHeight = AACStatusBarHeight(self.viewController);
     if (statusBarHeight > statusBarDefaultHeight)
     {
