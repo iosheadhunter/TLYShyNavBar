@@ -327,8 +327,10 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
                 [self.delegate shyNavBarManagerDidBecomeFullyContracted:self];
             }
         }
-
         [self.navBarController updateYOffset:deltaY];
+        if ([self.delegate respondsToSelector:@selector(shyNavBarManagerDidHandleScrolling)]) {
+            [self.delegate shyNavBarManagerDidHandleScrolling];
+        }
     }
 
     self.previousYOffset = self.scrollView.contentOffset.y;
