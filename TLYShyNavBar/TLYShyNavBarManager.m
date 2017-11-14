@@ -348,7 +348,8 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
     {
         __typeof(self) strongSelf = weakSelf;
         if (strongSelf) {
-            if (strongSelf.contracting) {
+            if ((self.contracting && self.navBarController.subShyController.contracted) ||
+                (!self.contracting && !self.navBarController.expanded)) {
                 if ([strongSelf.delegate respondsToSelector:@selector(shyNavBarManagerDidFinishContracting:)]) {
                     [strongSelf.delegate shyNavBarManagerDidFinishContracting:strongSelf];
                 }
@@ -375,7 +376,7 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
     {
         if (self.isViewControllerVisible && ![self _scrollViewIsSuffecientlyLong])
         {
-            [self.navBarController expand];
+            [self.navBarController expandWithCompletion:nil];
         }
     }
     else
@@ -420,14 +421,22 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
 {
     if (fabs([self.scrollViewController updateLayoutIfNeeded]) > FLT_EPSILON)
     {
-        [self.navBarController expand];
+        [self.navBarController expandWithCompletion:nil];
         [self.extensionViewContainer.superview bringSubviewToFront:self.extensionViewContainer];
     }
 }
 
 - (void)cleanup
 {
-    [self.navBarController expand];
+    __weak __typeof(self) weakSelf = self;
+    [self.navBarController expandWithCompletion:^{
+        __typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+            if ([strongSelf.delegate respondsToSelector:@selector(shyNavBarManagerDidFinishExpanding:)]) {
+                [strongSelf.delegate shyNavBarManagerDidFinishExpanding:strongSelf];
+            }
+        }
+    }];
     self.previousYOffset = NAN;
 }
 
@@ -462,13 +471,29 @@ static void * const kTLYShyNavBarManagerKVOContext = (void*)&kTLYShyNavBarManage
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     if (self.scrollView.window) {
-        [self.navBarController expand];
+        __weak __typeof(self) weakSelf = self;
+        [self.navBarController expandWithCompletion:^{
+            __typeof(self) strongSelf = weakSelf;
+            if (strongSelf) {
+                if ([strongSelf.delegate respondsToSelector:@selector(shyNavBarManagerDidFinishExpanding:)]) {
+                    [strongSelf.delegate shyNavBarManagerDidFinishExpanding:strongSelf];
+                }
+            }
+        }];
     }
 }
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
 {
-    [self.navBarController expand];
+    __weak __typeof(self) weakSelf = self;
+    [self.navBarController expandWithCompletion:^{
+        __typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+            if ([strongSelf.delegate respondsToSelector:@selector(shyNavBarManagerDidFinishExpanding:)]) {
+                [strongSelf.delegate shyNavBarManagerDidFinishExpanding:strongSelf];
+            }
+        }
+    }];
 }
 
 @end

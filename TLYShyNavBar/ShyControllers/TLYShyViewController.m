@@ -39,9 +39,6 @@
 
 @property (nonatomic, assign) CGPoint contractedCenterValue;
 
-@property (nonatomic, assign) BOOL contracted;
-@property (nonatomic, assign) BOOL expanded;
-
 @end
 
 @implementation TLYShyViewController
@@ -231,7 +228,7 @@
         }
         else
         {
-            deltaY = [self.subShyController expand];
+            deltaY = [self.subShyController expandWithCompletion:nil];
         }
     }
                      completion:^(BOOL finished)
@@ -244,7 +241,7 @@
     return deltaY;
 }
 
-- (CGFloat)expand
+- (CGFloat)expandWithCompletion:(void (^)())completion
 {
     self.view.hidden = NO;
     
@@ -253,7 +250,11 @@
     CGFloat amountToMove = self.expandedCenterValue.y - self.view.center.y;
 
     [self _updateCenter:self.expandedCenterValue];
-    [self.subShyController expand];
+    [self.subShyController expandWithCompletion:nil];
+
+    if (completion) {
+        completion();
+    }
     
     return amountToMove;
 }
