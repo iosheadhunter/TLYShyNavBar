@@ -42,8 +42,8 @@ typedef CGFloat(^TLYShyViewControllerContractionAmountBlock)(UIView *view);
 /* Sticky means it will always stay in expanded state
  */
 @property (nonatomic) BOOL sticky;
-@property (nonatomic, assign) BOOL contracted;
-@property (nonatomic, assign) BOOL expanded;
+@property (nonatomic, readonly, assign) BOOL contracted;
+@property (nonatomic, readonly, assign) BOOL expanded;
 
 - (void)offsetCenterBy:(CGPoint)deltaPoint;
 - (CGFloat)updateYOffset:(CGFloat)deltaY;
