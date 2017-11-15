@@ -118,18 +118,6 @@
         if (!isBackgroundView && !isViewHidden)
         {
             view.alpha = alpha;
-
-            if(@available(iOS 11.0, *))
-            {
-                NSString* subViewClassName = NSStringFromClass([view class]);
-                if ([subViewClassName containsString:@"UINavigationBarContentView"])
-                {
-                    for (UIView* subSubView in view.subviews)
-                    {
-                        subSubView.alpha = alpha;
-                    }
-                }
-            }
         }
     }
 }
