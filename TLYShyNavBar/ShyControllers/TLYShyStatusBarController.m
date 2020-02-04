@@ -38,30 +38,30 @@ static inline CGFloat AACStatusBarHeight(UIViewController *viewController)
 
 @implementation TLYShyStatusBarController
 
-- (CGFloat)statusBarDefaultHeight {
-    int const iPhoneXScreenHeight = 2436;
-    CGFloat iPhoneXStatusBarHeight = 44;
-    CGFloat defaultStatusBarHeight = 20;
-    if([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
-        switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
-            case iPhoneXScreenHeight:
-                return iPhoneXStatusBarHeight;
-            default:
-                return defaultStatusBarHeight;
-        }
+- (BOOL)isDeviceWithHomeButton
+{
+    /// https://stackoverflow.com/a/52653101
+    if (@available(iOS 11.0, *)) {
+        return UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom == 0;
+    } else {
+        return true;
     }
-    return defaultStatusBarHeight;
 }
 
 - (CGFloat)_statusBarHeight
 {
-    CGFloat statusBarDefaultHeight = [self statusBarDefaultHeight];
     CGFloat statusBarHeight = AACStatusBarHeight(self.viewController);
-    if (statusBarHeight > statusBarDefaultHeight)
-    {
-        statusBarHeight -= statusBarDefaultHeight;
+    if (@available(iOS 13, *)) {
+        /// No need to change anything here. Assume that status bar always with same height
+    } else if ([self isDeviceWithHomeButton]) {
+        /// The standard status bar is 20 pixels. The navigation bar extends 20 pixels up so it is overlapped by the status bar.
+        /// When there is a larger than 20 pixel status bar (e.g. a phone call is in progress or GPS is active), the center needs
+        /// to shift up 20 pixels to avoid this 'dead space' being visible above the usual nav bar.
+        if (statusBarHeight > 20) {
+            statusBarHeight -= 20;
+        }
     }
-    
+
     return statusBarHeight;
 }
 
